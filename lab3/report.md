@@ -317,7 +317,15 @@ GitHub Pages rebuilt the site from the existing configuration. The dashboard is 
 
 ### 10.2 Report
 
-This report, with the screenshots, was added as `lab3/report.md` and `lab3/report.docx` in a second commit.
+This report, with the screenshots, was added as `lab3/report.md` and `lab3/report.docx` in a second commit, so the history reads: dashboard first, report second.
+
+![git add -A with the report and screenshots](screenshots/p10_08_git_add_report.png)
+
+![The report commit](screenshots/p10_09_git_commit_report.png)
+
+![git push](screenshots/p10_10_git_push_report.png)
+
+![Final git log](screenshots/p10_11_git_log_final.png)
 
 ---
 
