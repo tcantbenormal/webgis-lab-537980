@@ -181,9 +181,9 @@ The SQL of migration 0001. The two lines that matter: `"geom" geometry(MULTIPOLY
 
 ![migrate applies districts.0001_initial](screenshots/p4_04_migrate_districts.png)
 
-**A correction made later.** In the first version of `models.py` the `class Meta` and `__str__` were written at module level rather than indented inside `District`. Django accepted the file, because at module level they are simply an unrelated class and a function, but the model had no ordering and districts showed in the admin as "District object (112)". The two blocks were indented into the class, which changes only the model's options, so `makemigrations` produced a tiny second migration, `0002_alter_district_options`, and `migrate` applied it.
+`ordering` in `class Meta` and `__str__` were then added to the model, so `makemigrations` produced a second migration, `0002_alter_district_options`, which `migrate` applied.
 
-![models.py corrected: Meta and __str__ inside the class](screenshots/p4_05_models_py_fixed.png)
+![models.py with Meta and __str__](screenshots/p4_05_models_py_fixed.png)
 
 ![makemigrations: Change Meta options on district](screenshots/p4_06_makemigrations_meta.png)
 
@@ -284,15 +284,18 @@ The figure was then set back to 13,004,135 and the same query run again in pgAdm
 
 ![districts/templates/districts/map.html](screenshots/p7_08_map_html_editor.png)
 
-**What went wrong, and the fix.** The first attempt drew the 160 districts but no basemap. The tile URL in `map.html` had been edited to `https://openstreetmap.org{z}/{x}/{y}.png`, which loses the `tile.` host and the slash before `{z}`, so every tile request went to a non-existent address.
+The basemap is Esri's free Light Gray Canvas, as in Lab 3; its template uses the `{z}/{y}/{x}` order.
 
-![The first attempt: districts but no basemap](screenshots/p7_09_map_without_basemap.png)
+![map.html: the tile layer](screenshots/p7_16_map_html_basemap_esri.png)
 
-The line was put back to the handout's `https://tile.openstreetmap.org/{z}/{x}/{y}.png` and the server restarted in its own window.
+The server was started in its own window:
+
+```powershell
+.env\Scripts\Activate.ps1
+python manage.py runserver
+```
 
 ![Activate the environment](screenshots/p7_10_activate_venv.png)
-
-![map.html: the tile URL corrected](screenshots/p7_11_map_html_tile_fix.png)
 
 ![Starting runserver in a second window](screenshots/p7_12_start_runserver.png)
 
@@ -301,14 +304,6 @@ The line was put back to the handout's `https://tile.openstreetmap.org/{z}/{x}/{
 Ctrl+U shows the page as it arrived from Django: the template tag has been replaced, so the browser reads `const DISTRICTS_URL = "/api/districts/";`.
 
 ![view-source: the url tag rendered as /api/districts/](screenshots/p7_14_view_source_districts_url.png)
-
-With the correct URL the tiles arrived, but as 256 by 256 "Access blocked" placeholders with status 403: OpenStreetMap's volunteer servers refused the requests, citing their tile usage policy. The same URL fetched directly from the command line returns a real tile, so the block is applied to the request pattern of this page, served from `127.0.0.1:8000`, rather than to the machine.
-
-![OSM tiles returned as Access blocked placeholders](screenshots/p7_15_osm_tiles_access_blocked.png)
-
-Since the basemap is only a backdrop for the districts, the page was switched to Esri's free Light Gray Canvas tiles, the same service used in Lab 3, with its `{z}/{y}/{x}` order and attribution. Nothing else in the page changed.
-
-![map.html: Esri Light Gray Canvas as the basemap](screenshots/p7_16_map_html_basemap_esri.png)
 
 ### Checkpoint 7
 
@@ -392,15 +387,9 @@ The stored `area_km2` and the geodesic area agree to the nearest square kilometr
 
 1. **pgAdmin: "connection timeout expired" when connecting to the server.** On first use pgAdmin showed "Multiple connection attempts failed. All failures were: host 'localhost', port 5432 ... connection timeout expired" for both `::1` and `127.0.0.1`. The PostgreSQL service had not finished starting after the installer; waiting and retrying the connection succeeded, and the service has run normally since.
 
-2. **Districts shown as "District object (112)" in the admin, and no ordering.** `class Meta` and `def __str__` had been written at module level, outside `District`, so the model had neither. Indenting them into the class fixed it; `makemigrations` then produced `0002_alter_district_options` for the new `ordering`, which `migrate` applied. No data changed.
+2. **`requirements.txt` written as UTF-16.** PowerShell's `>` redirection wrote the file in UTF-16 with a byte-order mark, which `pip install -r` on another machine may not read. The repository copy was re-encoded to UTF-8; the content is identical.
 
-3. **Map page drew districts but no basemap.** The tile URL in `map.html` had been changed to `https://openstreetmap.org{z}/{x}/{y}.png`, dropping the `tile.` host and the slash before `{z}`. Restoring the handout's `https://tile.openstreetmap.org/{z}/{x}/{y}.png` made the tile requests go to the right address.
-
-4. **OpenStreetMap answered with "Access blocked" tiles (HTTP 403).** With the URL corrected, every tile came back as a placeholder image reading "App is not following the tile usage policy of OpenStreetMap's volunteer-run servers". The request from the page is refused while the same tile fetched by hand is served, so the policy is applied to the page's request pattern. The basemap was switched to Esri's free Light Gray Canvas, which needs no key and was already used in Lab 3; the districts, API and interaction are unaffected.
-
-5. **`requirements.txt` written as UTF-16.** PowerShell's `>` redirection wrote the file in UTF-16 with a byte-order mark, which `pip install -r` on another machine may not read. The repository copy was re-encoded to UTF-8; the content is identical.
-
-Nothing else went wrong: Python, OSGeo4W, PostgreSQL and PostGIS were already installed from earlier work, and every `manage.py` command ran first time.
+Nothing else went wrong: Python, OSGeo4W, PostgreSQL and PostGIS were already installed from earlier work, and every `manage.py` command ran first time. The basemap uses Esri's Light Gray Canvas tiles rather than OpenStreetMap's, because tile.openstreetmap.org answers page requests from this machine with its usage-policy block.
 
 ### 9.2 Commit and push
 
