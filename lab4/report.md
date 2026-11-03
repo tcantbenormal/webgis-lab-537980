@@ -427,6 +427,14 @@ git log --oneline
 
 This lab has no live URL: GitHub Pages serves files and cannot run Python or a database, so the project runs only on this machine. The submission is the repository and this report, added to `lab4/` as `report.md` and `report.docx` in a second commit.
 
+![git add -A with the report and screenshots](screenshots/p9_08_git_add_report.png)
+
+![The report commit](screenshots/p9_09_git_commit_report.png)
+
+![git push](screenshots/p9_10_git_push_report.png)
+
+![Final git log: both Lab 4 commits on top of Lab 3](screenshots/p9_11_git_log_final.png)
+
 ---
 
 ## Questions
