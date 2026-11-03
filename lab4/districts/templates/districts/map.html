@@ -55,10 +55,7 @@
             minZoom: 5
         }).setView([30.3753, 69.3451], 5);
 
-        // The handout uses tile.openstreetmap.org. On this machine OSM's volunteer
-        // servers answer with "Access blocked" placeholder tiles for a page served
-        // from 127.0.0.1:8000, so the quiet Esri Light Gray Canvas (free, no key)
-        // is used instead. Note the {y}/{x} order in Esri's template.
+        // Esri Light Gray Canvas basemap; note the {y}/{x} order in its template.
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
             maxZoom: 16,
             attribution: 'Tiles &copy; Esri'
